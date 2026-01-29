@@ -74,20 +74,15 @@
         .brand-card-link:hover { background: #FEF0ED; }
         .brand-url-section { border-top: 1px solid #f0f0e8; padding-top: 12px; }
         .brand-url-label { font-size: 12px; font-weight: 500; margin-bottom: 6px; color: #333; }
+        .url-input-row { display: flex; gap: 8px; }
         .brand-url-input {
-            width: 100%; padding: 10px 12px; background: #F6F5EC; border: 1px solid #e0e0d8;
-            border-radius: 8px; font-size: 13px; font-family: inherit;
-            -webkit-user-select: text; user-select: text;
+            flex: 1; padding: 12px 14px; background: white; border: 2px solid #e0e0d8;
+            border-radius: 8px; font-size: 14px; font-family: inherit;
         }
-        .brand-url-input:focus { outline: 2px solid #F4846E; border-color: #F4846E; background: white; }
-        .paste-btn {
-            background: white; color: #666; border: 1px solid #ddd; padding: 10px 12px;
-            border-radius: 8px; cursor: pointer; font-size: 12px; white-space: nowrap;
-        }
-        .paste-btn:hover { background: #f5f5f5; }
+        .brand-url-input:focus { outline: none; border-color: #F4846E; }
         .add-btn {
-            background: #F4846E; color: white; border: none; padding: 10px 14px;
-            border-radius: 8px; cursor: pointer; font-size: 12px; white-space: nowrap;
+            background: #F4846E; color: white; border: none; padding: 12px 18px;
+            border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; white-space: nowrap;
         }
         .add-btn:hover { background: #e5745f; }
         .brand-url-list { max-height: 100px; overflow-y: auto; margin-top: 8px; min-height: 0; }
@@ -473,12 +468,10 @@
                             </div>
                             <div class="brand-url-section">
                                 <div class="brand-url-label">Add product URLs:</div>
-                                <div style="display: flex; gap: 6px;">
-                                    <input type="url" class="brand-url-input" id="input_${b.id}" style="flex: 1;"
-                                        placeholder="Paste or type Amazon URL..."
-                                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-                                    <button type="button" class="paste-btn" data-brand="${b.id}">📋 Paste</button>
-                                    <button type="button" class="add-btn" data-brand="${b.id}">Add</button>
+                                <div class="url-input-row">
+                                    <input type="text" class="brand-url-input" id="input_${b.id}"
+                                        placeholder="Paste Amazon URL here...">
+                                    <button type="button" class="add-btn" data-brand="${b.id}">+ Add</button>
                                 </div>
                                 <div class="brand-url-list" id="urlList_${b.id}">
                                     ${urls.map((url, i) => `
@@ -523,62 +516,8 @@
             `).join('');
         }
 
-        // 使用 Clipboard API 粘贴
-        async function pasteFromClipboard(brandId) {
-            const input = document.getElementById('input_' + brandId);
-            try {
-                const text = await navigator.clipboard.readText();
-                if (!text || !text.trim()) {
-                    if (input) input.focus();
-                    return;
-                }
-                processUrls(brandId, text.trim());
-            } catch (err) {
-                // Clipboard API 可能需要 HTTPS 或用户授权
-                if (input) {
-                    input.focus();
-                    // 尝试用 execCommand
-                    document.execCommand('paste');
-                }
-            }
-        }
-        
-        // 处理 URL 文本（支持多个）
-        function processUrls(brandId, text) {
-            const urlPattern = /https?:\/\/[^\s,\n<>"]+/g;
-            let urls = text.match(urlPattern) || [];
-            
-            if (urls.length === 0 && (text.includes('amazon') || text.includes('amzn'))) {
-                urls.push(text);
-            }
-            
-            if (urls.length === 0) return;
-            
-            if (!brandProductUrls[brandId]) brandProductUrls[brandId] = [];
-            let added = 0;
-            urls.forEach(url => {
-                url = url.trim();
-                if (url && !brandProductUrls[brandId].includes(url)) {
-                    brandProductUrls[brandId].push(url);
-                    added++;
-                }
-            });
-            
-            if (added > 0) {
-                const input = document.getElementById('input_' + brandId);
-                if (input) input.value = '';
-                updateUrlList(brandId);
-                update();
-            }
-        }
-        
-        // 事件委托：处理所有按钮点击
+        // 事件委托：处理按钮点击
         document.addEventListener('click', function(e) {
-            // Paste 按钮
-            if (e.target.classList.contains('paste-btn')) {
-                const brandId = e.target.dataset.brand;
-                pasteFromClipboard(brandId);
-            }
             // Add 按钮
             if (e.target.classList.contains('add-btn')) {
                 const brandId = e.target.dataset.brand;
