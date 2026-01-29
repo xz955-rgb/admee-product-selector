@@ -240,34 +240,13 @@
 
     <script>
         // ========================================
-        // 产品数据
+        // Google Sheet 自动同步配置
+        // Sheet ID: 11uWwESoFzKowpKAKa32hD19t3EwrhkI1WIPrrTN65hw
         // ========================================
-        const products = [
-            // Saodimallsu - Clothing - 2.50% 佣金
-            { id: 1, brand: "Saodimallsu", name: "Oversized Cable Knit Sweater", category: "Clothing", commission: "2.50%", link: "https://www.amazon.com/dp/B0FC6D1YTY?th=1&psc=1", image: "https://m.media-amazon.com/images/I/71tBCsdqwQL._AC_SY879_.jpg" },
-            { id: 2, brand: "Saodimallsu", name: "Color Block Cropped Sweaters", category: "Clothing", commission: "2.50%", link: "https://www.amazon.com/dp/B0FC6LCKKJ?th=1&psc=1", image: "https://m.media-amazon.com/images/I/71ExeJX4ioL._AC_SX679_.jpg" },
-            { id: 3, brand: "Saodimallsu", name: "Long Cardigan Sweaters", category: "Clothing", commission: "2.50%", link: "https://www.amazon.com/dp/B0FBRH3V84?th=1&psc=1", image: "https://m.media-amazon.com/images/I/710FZFTkd6L._AC_SY879_.jpg" },
-            { id: 4, brand: "Saodimallsu", name: "Cardigan Sweaters Open Front", category: "Clothing", commission: "2.50%", link: "https://www.amazon.com/dp/B0F8VPS5M6?th=1&psc=1", image: "https://m.media-amazon.com/images/I/81e3ny2-stL._AC_SY879_.jpg" },
-            { id: 5, brand: "Saodimallsu", name: "Pajama Sets Striped 2 Piece", category: "Clothing", commission: "2.50%", link: "https://www.amazon.com/dp/B0DJNW2Q2D?th=1&psc=1", image: "https://m.media-amazon.com/images/I/81i5aXzu8fL._AC_SY879_.jpg" },
-            { id: 6, brand: "Saodimallsu", name: "2 Piece Outfits Sweater Sets", category: "Clothing", commission: "2.50%", link: "https://www.amazon.com/dp/B0G1LNPB2F?th=1&psc=1", image: "https://m.media-amazon.com/images/I/61PaB-7Zc7L._AC_SY879_.jpg" },
-            { id: 7, brand: "Saodimallsu", name: "Cotton Cargo Pants", category: "Clothing", commission: "2.50%", link: "https://www.amazon.com/dp/B0FF1RNG5L?th=1&psc=1", image: "https://m.media-amazon.com/images/I/61PvNthrP9L._AC_SY879_.jpg" },
-            { id: 8, brand: "Saodimallsu", name: "High Waisted Denim Shorts", category: "Clothing", commission: "2.50%", link: "https://www.amazon.com/dp/B0G1LNHKTX?th=1&psc=1", image: "https://m.media-amazon.com/images/I/71WorHqWqBL._AC_SY879_.jpg" },
-            
-            // Montana West - Bags & Packs & Accessories - 12.50% 佣金
-            { id: 9, brand: "Montana West", name: "Slim Wallet", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FJCVKH2R?th=1", image: "https://m.media-amazon.com/images/I/71+MrY1cuOL._AC_SY300_SX300_.jpg" },
-            { id: 10, brand: "Montana West", name: "Clear Bag for Stadium Events", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FHQ4F4HG?th=1", image: "https://m.media-amazon.com/images/I/61J95j6pwWL._AC_SY695_.jpg" },
-            { id: 11, brand: "Montana West", name: "Crossbody Bags for Women", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FHKTQVJM?th=1", image: "https://m.media-amazon.com/images/I/71QlOG3D2mL._AC_SY695_.jpg" },
-            { id: 12, brand: "Montana West", name: "Crossbody Bag for Women Game Day", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FHPQ68CC?th=1", image: "https://m.media-amazon.com/images/I/71ZKodL8VqL._AC_SY695_.jpg" },
-            { id: 13, brand: "Montana West", name: "Crossbody Box Purse", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FL7J1VXD?th=1", image: "https://m.media-amazon.com/images/I/71b4PufmxRL._AC_SY695_.jpg" },
-            { id: 14, brand: "Montana West", name: "NCAA Fan Purse with Adjustable Strap", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FLY5626C?th=1", image: "https://m.media-amazon.com/images/I/71vCPPcuo9L._AC_SY300_SX300_.jpg" },
-            { id: 15, brand: "Montana West", name: "Mini Tote Bag", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FLY68TQH?th=1", image: "https://m.media-amazon.com/images/I/71ugNDUvZAL._AC_SY695_.jpg" },
-            { id: 16, brand: "Montana West", name: "Wristlet Purse for Women", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FJLR4MWQ?th=1", image: "https://m.media-amazon.com/images/I/71lSW8W9DRL._AC_SY695_.jpg" },
-            { id: 17, brand: "Montana West", name: "Zip Around Wallet with Lanyard", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FJLTHGY3?th=1", image: "https://m.media-amazon.com/images/I/71w8xGZC5IL._AC_SY300_SX300_.jpg" },
-            { id: 18, brand: "Montana West", name: "Large Travel Duffel Bag", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FHQ4ZJ9L?th=1", image: "https://m.media-amazon.com/images/I/71MypUYxbsL._AC_SL1500_.jpg" },
-            { id: 19, brand: "Montana West", name: "Wristlet Wallets", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FJLSXZRM?th=1", image: "https://m.media-amazon.com/images/I/71inei5mb5L._AC_SY300_SX300_.jpg" }
-        ];
-        // ========================================
-
+        const SHEET_ID = '11uWwESoFzKowpKAKa32hD19t3EwrhkI1WIPrrTN65hw';
+        const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
+        
+        let products = [];
         let selectedProducts = new Set();
         let collapsedBrands = new Set();
 
@@ -281,10 +260,72 @@
         const submitModal = $('submitModal');
         const modalContent = $('modalContent');
 
-        function init() {
+        // 解析 CSV 数据
+        function parseCSV(csv) {
+            const lines = csv.split('\n');
+            const result = [];
+            for (let i = 1; i < lines.length; i++) { // 跳过标题行
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                // 解析 CSV 行（处理引号内的逗号）
+                const values = [];
+                let current = '';
+                let inQuotes = false;
+                for (let j = 0; j < line.length; j++) {
+                    const char = line[j];
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        values.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                values.push(current.trim());
+                
+                // 列映射: A=Brand, B=Name, C=Category, D=Commission, G=URL(索引6), I=Picture link(索引8)
+                if (values[0] && values[1]) {
+                    result.push({
+                        id: i,
+                        brand: values[0].replace(/^"|"$/g, ''),
+                        name: values[1].replace(/^"|"$/g, ''),
+                        category: values[2]?.replace(/^"|"$/g, '') || '',
+                        commission: values[3]?.replace(/^"|"$/g, '') || '',
+                        link: values[6]?.replace(/^"|"$/g, '') || '',
+                        image: values[8]?.replace(/^"|"$/g, '') || ''
+                    });
+                }
+            }
+            return result;
+        }
+
+        // 从 Google Sheet 加载数据
+        async function loadProducts() {
+            productsContainer.innerHTML = '<div class="empty-state"><p>Loading products...</p></div>';
+            try {
+                const response = await fetch(SHEET_URL);
+                const csv = await response.text();
+                products = parseCSV(csv);
+                initFilters();
+                renderProducts();
+            } catch (error) {
+                console.error('Error loading products:', error);
+                productsContainer.innerHTML = '<div class="empty-state"><p>Failed to load products. Please refresh.</p></div>';
+            }
+        }
+
+        function initFilters() {
+            // 清空并重新填充筛选器
+            brandFilter.innerHTML = '<option value="">All Brands</option>';
+            categoryFilter.innerHTML = '<option value="">All Categories</option>';
             [...new Set(products.map(p => p.brand))].forEach(b => brandFilter.add(new Option(b, b)));
             [...new Set(products.map(p => p.category))].forEach(c => categoryFilter.add(new Option(c, c)));
-            renderProducts();
+        }
+
+        function init() {
+            loadProducts();
             setupEvents();
         }
 
