@@ -289,6 +289,21 @@
         </div>
 
         <!-- Featured Brands Section -->
+        <h2 class="section-title">Featured <span>Brands</span></h2>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">Browse products and paste URLs you want to promote</p>
+        
+        <div class="filters" id="brandFiltersSection">
+            <div class="search-box">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" id="brandSearchInput" placeholder="Search brands...">
+            </div>
+            <select class="filter-select" id="brandCategoryFilter">
+                <option value="">All Categories</option>
+            </select>
+        </div>
+        
         <div class="featured-brands" id="featuredBrands"></div>
 
         <div class="divider"></div>
@@ -340,6 +355,8 @@
         const searchInput = $('searchInput');
         const brandFilter = $('brandFilter');
         const categoryFilter = $('categoryFilter');
+        const brandSearchInput = $('brandSearchInput');
+        const brandCategoryFilter = $('brandCategoryFilter');
         const submitModal = $('submitModal');
         const modalContent = $('modalContent');
 
@@ -408,13 +425,14 @@
                 }
                 values.push(current.trim());
                 
-                // Brand Lists: A=Brand, B=Commission, C=URL
+                // Brand Lists: A=Brand, B=Commission, C=URL, D=Category (optional)
                 if (values[0]) {
                     result.push({
                         id: 'brand_' + i,
                         name: values[0].replace(/^"|"$/g, ''),
                         commission: values[1]?.replace(/^"|"$/g, '') || '',
-                        url: values[2]?.replace(/^"|"$/g, '') || ''
+                        url: values[2]?.replace(/^"|"$/g, '') || '',
+                        category: values[3]?.replace(/^"|"$/g, '') || 'General'
                     });
                 }
             }
@@ -448,18 +466,29 @@
             }
         }
 
+        // 获取筛选后的品牌
+        function getFilteredBrands() {
+            const search = brandSearchInput.value.toLowerCase();
+            const cat = brandCategoryFilter.value;
+            return featuredBrands.filter(b => {
+                const matchSearch = !search || b.name.toLowerCase().includes(search);
+                const matchCat = !cat || b.category === cat;
+                return matchSearch && matchCat;
+            });
+        }
+
         // 渲染品牌专区
         function renderFeaturedBrands() {
-            if (!featuredBrands.length) {
-                featuredBrandsContainer.innerHTML = '';
+            const filtered = getFilteredBrands();
+            
+            if (!filtered.length) {
+                featuredBrandsContainer.innerHTML = '<div class="empty-state"><p>No brands found</p></div>';
                 return;
             }
 
             featuredBrandsContainer.innerHTML = `
-                <h2 class="section-title">Featured <span>Brands</span></h2>
-                <p style="text-align: center; color: #666; margin-bottom: 24px;">Browse products and paste URLs you want to promote</p>
                 <div class="brands-grid">
-                    ${featuredBrands.map(b => {
+                    ${filtered.map(b => {
                         const urls = brandProductUrls[b.id] || [];
                         return `
                         <div class="brand-card">
@@ -557,10 +586,15 @@
         }
 
         function initFilters() {
+            // Products filters
             brandFilter.innerHTML = '<option value="">All Brands</option>';
             categoryFilter.innerHTML = '<option value="">All Categories</option>';
             [...new Set(products.map(p => p.brand))].forEach(b => brandFilter.add(new Option(b, b)));
             [...new Set(products.map(p => p.category))].forEach(c => categoryFilter.add(new Option(c, c)));
+            
+            // Featured Brands filters
+            brandCategoryFilter.innerHTML = '<option value="">All Categories</option>';
+            [...new Set(featuredBrands.map(b => b.category))].forEach(c => brandCategoryFilter.add(new Option(c, c)));
         }
 
         function init() {
@@ -796,9 +830,14 @@
 
         function setupEvents() {
             submitBtn.onclick = showModal;
+            // Products filters
             searchInput.oninput = renderProducts;
             brandFilter.onchange = renderProducts;
             categoryFilter.onchange = renderProducts;
+            // Brands filters
+            brandSearchInput.oninput = renderFeaturedBrands;
+            brandCategoryFilter.onchange = renderFeaturedBrands;
+            // Modal
             submitModal.onclick = e => e.target === submitModal && closeModal();
             document.onkeydown = e => { if (e.key === 'Escape') closeModal(); };
         }
