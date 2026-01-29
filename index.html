@@ -23,11 +23,17 @@
     </style>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body {
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: #F6F5EC;
             color: #1a1a1a;
             overflow-x: hidden;
+            /* 禁用 body 滚动，让 Framer 父页面控制 */
+            overflow-y: auto;
         }
         .container { max-width: 1100px; margin: 0 auto; padding: 140px 20px 60px; }
 
@@ -732,17 +738,21 @@
             
             // 格式化选品列表
             let productList = '';
+            let itemNum = 1;
             
-            // 品牌产品 URLs
+            // 品牌产品 URLs（Featured Brands）
             const hasBrandUrls = Object.keys(brandProductUrls).length > 0;
             if (hasBrandUrls) {
-                productList += '【品牌产品选择】\n';
+                productList += '=== Featured Brands 品牌专区 ===\n';
                 for (const brandId in brandProductUrls) {
                     const brand = featuredBrands.find(b => b.id === brandId);
                     if (brand) {
-                        productList += `\n${brand.name} (+${brand.commission}):\n`;
-                        brandProductUrls[brandId].forEach(url => {
-                            productList += `• ${url}\n`;
+                        productList += `\n【${brand.name}】Extra Commission: +${brand.commission}\n`;
+                        productList += `Store: ${brand.url}\n`;
+                        productList += `Selected Products:\n`;
+                        brandProductUrls[brandId].forEach((url, idx) => {
+                            productList += `  ${itemNum}. ${url}\n`;
+                            itemNum++;
                         });
                     }
                 }
@@ -751,7 +761,14 @@
             // 单品选择
             if (selProducts.length) {
                 if (productList) productList += '\n';
-                productList += '【单品选择】\n' + selProducts.map(p => `• ${p.brand} - ${p.name} (+${p.commission})`).join('\n');
+                productList += '=== More Products 更多产品 ===\n\n';
+                selProducts.forEach((p, idx) => {
+                    productList += `${itemNum}. ${p.name}\n`;
+                    productList += `   Brand: ${p.brand}\n`;
+                    productList += `   Commission: +${p.commission}\n`;
+                    productList += `   Link: ${p.link}\n\n`;
+                    itemNum++;
+                });
             }
             
             // 提交到 Google Form
