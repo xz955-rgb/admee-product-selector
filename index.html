@@ -77,8 +77,9 @@
         .brand-url-input {
             width: 100%; padding: 10px 12px; background: #F6F5EC; border: 1px solid #e0e0d8;
             border-radius: 8px; font-size: 13px; font-family: inherit;
+            -webkit-user-select: text; user-select: text;
         }
-        .brand-url-input:focus { outline: none; border-color: #F4846E; background: white; }
+        .brand-url-input:focus { outline: 2px solid #F4846E; border-color: #F4846E; background: white; }
         .paste-btn {
             background: white; color: #666; border: 1px solid #ddd; padding: 10px 12px;
             border-radius: 8px; cursor: pointer; font-size: 12px; white-space: nowrap;
@@ -203,13 +204,15 @@
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: flex-start; justify-content: center;
+            padding-top: 60px;
             z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.2s;
+            overflow-y: auto;
         }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal {
             background: white; border-radius: 18px; padding: 28px;
-            max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;
+            max-width: 500px; width: 90%; margin-bottom: 40px;
             transform: scale(0.95); transition: all 0.2s;
         }
         .modal-overlay.active .modal { transform: scale(1); }
@@ -471,10 +474,11 @@
                             <div class="brand-url-section">
                                 <div class="brand-url-label">Add product URLs:</div>
                                 <div style="display: flex; gap: 6px;">
-                                    <input type="text" class="brand-url-input" id="input_${b.id}" style="flex: 1;"
-                                        placeholder="Paste or type Amazon URL...">
-                                    <button class="paste-btn" data-brand="${b.id}">📋 Paste</button>
-                                    <button class="add-btn" data-brand="${b.id}">Add</button>
+                                    <input type="url" class="brand-url-input" id="input_${b.id}" style="flex: 1;"
+                                        placeholder="Paste or type Amazon URL..."
+                                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                                    <button type="button" class="paste-btn" data-brand="${b.id}">📋 Paste</button>
+                                    <button type="button" class="add-btn" data-brand="${b.id}">Add</button>
                                 </div>
                                 <div class="brand-url-list" id="urlList_${b.id}">
                                     ${urls.map((url, i) => `
@@ -588,8 +592,8 @@
             }
         });
         
-        // Enter 键添加 URL
-        document.addEventListener('keydown', function(e) {
+        // Enter 键添加 URL（只处理 Enter，不影响其他键）
+        document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && e.target.classList.contains('brand-url-input')) {
                 e.preventDefault();
                 const brandId = e.target.id.replace('input_', '');
@@ -745,9 +749,13 @@
                 </div>
             `;
             submitModal.classList.add('active');
-            // 滚动到顶部确保弹窗可见
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            // 通知父页面（如果在 iframe 中）
+            // 立即滚动到顶部
+            window.scrollTo(0, 0);
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+            // modal 内部也滚动到顶部
+            submitModal.scrollTop = 0;
+            // 通知父页面
             if (window.parent !== window) {
                 window.parent.postMessage({ type: 'scrollToTop' }, '*');
             }
