@@ -782,7 +782,7 @@
             brandFilter.onchange = renderProducts;
             categoryFilter.onchange = renderProducts;
             submitModal.onclick = e => e.target === submitModal && closeModal();
-            document.onkeydown = e => e.key === 'Escape' && closeModal();
+            document.onkeydown = e => { if (e.key === 'Escape') closeModal(); };
         }
 
         // iframe 高度自适应通信
