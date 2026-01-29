@@ -71,10 +71,13 @@
             border-radius: 100px; font-size: 13px; font-weight: 600;
         }
         .brand-card-category {
-            font-size: 12px; color: #888; margin-bottom: 8px;
+            font-size: 13px; color: #888; margin-top: 4px;
+            display: inline-flex; align-items: center; gap: 4px;
         }
-        .brand-card-desc { color: #666; font-size: 13px; margin-bottom: 12px; line-height: 1.4; }
-        .brand-card-actions { display: flex; gap: 10px; margin-bottom: 12px; }
+        .brand-card-category::before {
+            content: ''; width: 6px; height: 6px; background: #ddd; border-radius: 50%;
+        }
+        .brand-card-actions { display: flex; gap: 10px; margin: 16px 0 12px; }
         .brand-card-link {
             background: white; color: #F4846E; padding: 10px 18px; border: 1px solid #F4846E;
             border-radius: 100px; text-decoration: none; font-size: 13px; font-weight: 500;
@@ -293,7 +296,10 @@
 
         <!-- Featured Brands Section -->
         <h2 class="section-title">Featured <span>Brands</span></h2>
-        <p style="text-align: center; color: #666; margin-bottom: 20px;">Browse products and paste URLs you want to promote</p>
+        <p style="text-align: center; color: #666; margin-bottom: 20px; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+            All products from these brands are eligible for extra commission.<br>
+            Browse the store and paste product URLs below.
+        </p>
         
         <div class="filters" id="brandFiltersSection">
             <div class="search-box">
@@ -496,11 +502,12 @@
                         return `
                         <div class="brand-card">
                             <div class="brand-card-header">
-                                <div class="brand-card-name">${b.name}</div>
+                                <div>
+                                    <div class="brand-card-name">${b.name}</div>
+                                    <div class="brand-card-category">${b.category}</div>
+                                </div>
                                 <div class="brand-card-commission">+${b.commission} Extra</div>
                             </div>
-                            <div class="brand-card-category">${b.category}</div>
-                            <div class="brand-card-desc">All products from this brand are eligible for extra commission. Browse the store and paste product URLs below.</div>
                             <div class="brand-card-actions">
                                 <a href="${b.url}" target="_blank" class="brand-card-link">
                                     Browse Store →
