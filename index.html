@@ -24,13 +24,48 @@
             font-size: 14px; margin-bottom: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
-        .badge svg { width: 18px; height: 18px; color: #F4846E; }
+        .badge svg { width: 18px; height: 18px; color: #F4846E; fill: #FEF0ED; }
         .header h1 {
             font-family: 'Playfair Display', Georgia, serif;
-            font-size: 42px; font-weight: 400; margin-bottom: 12px;
+            font-size: 52px; font-weight: 400; margin-bottom: 12px; line-height: 1.1;
         }
         .header h1 span { color: #F4846E; }
-        .header p { color: #666; font-size: 15px; max-width: 480px; margin: 0 auto; }
+        .header p { color: #666; font-size: 16px; max-width: 480px; margin: 0 auto; }
+
+        /* Featured Brands Section */
+        .featured-brands { margin-bottom: 40px; }
+        .section-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 28px; font-weight: 400; margin-bottom: 20px;
+            text-align: center;
+        }
+        .section-title span { color: #F4846E; }
+        .brands-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        .brand-card {
+            background: white; border-radius: 16px; padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.2s;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+        }
+        .brand-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        .brand-card.selected { box-shadow: 0 0 0 2px #F4846E, 0 8px 24px rgba(244,132,110,0.15); }
+        .brand-card { cursor: pointer; }
+        .brand-card-name {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 22px; font-weight: 500; margin-bottom: 8px;
+        }
+        .brand-card-commission {
+            background: #E8F5ED; color: #2D8B4E; padding: 6px 14px;
+            border-radius: 100px; font-size: 14px; font-weight: 600; margin-bottom: 12px;
+        }
+        .brand-card-desc { color: #666; font-size: 14px; margin-bottom: 16px; }
+        .brand-card-link {
+            background: #F4846E; color: white; padding: 12px 24px;
+            border-radius: 100px; text-decoration: none; font-size: 14px; font-weight: 500;
+            transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .brand-card-link:hover { background: #e5745f; }
+
+        .divider { height: 1px; background: #e5e5e0; margin: 40px 0; }
 
         .selection-bar {
             background: white; border-radius: 14px; padding: 16px 20px;
@@ -216,6 +251,13 @@
             </button>
         </div>
 
+        <!-- Featured Brands Section -->
+        <div class="featured-brands" id="featuredBrands"></div>
+
+        <div class="divider"></div>
+
+        <h2 class="section-title">Individual <span>Products</span></h2>
+
         <div class="filters">
             <div class="search-box">
                 <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -244,14 +286,18 @@
         // Sheet ID: 11uWwESoFzKowpKAKa32hD19t3EwrhkI1WIPrrTN65hw
         // ========================================
         const SHEET_ID = '11uWwESoFzKowpKAKa32hD19t3EwrhkI1WIPrrTN65hw';
-        const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
+        const PRODUCTS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=0`;
+        const BRANDS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=1417988362`;
         
         let products = [];
+        let featuredBrands = [];
         let selectedProducts = new Set();
+        let selectedBrands = new Set();
         let collapsedBrands = new Set();
 
         const $ = id => document.getElementById(id);
         const productsContainer = $('productsContainer');
+        const featuredBrandsContainer = $('featuredBrands');
         const selectionCount = $('selectionCount');
         const submitBtn = $('submitBtn');
         const searchInput = $('searchInput');
@@ -301,23 +347,102 @@
             return result;
         }
 
+        // 解析品牌列表 CSV
+        function parseBrandsCSV(csv) {
+            const lines = csv.split('\n');
+            const result = [];
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                const values = [];
+                let current = '';
+                let inQuotes = false;
+                for (let j = 0; j < line.length; j++) {
+                    const char = line[j];
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        values.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                values.push(current.trim());
+                
+                // Brand Lists: A=Brand, B=Commission, C=URL
+                if (values[0]) {
+                    result.push({
+                        id: 'brand_' + i,
+                        name: values[0].replace(/^"|"$/g, ''),
+                        commission: values[1]?.replace(/^"|"$/g, '') || '',
+                        url: values[2]?.replace(/^"|"$/g, '') || ''
+                    });
+                }
+            }
+            return result;
+        }
+
         // 从 Google Sheet 加载数据
-        async function loadProducts() {
+        async function loadData() {
             productsContainer.innerHTML = '<div class="empty-state"><p>Loading products...</p></div>';
+            featuredBrandsContainer.innerHTML = '<div class="empty-state"><p>Loading brands...</p></div>';
+            
             try {
-                const response = await fetch(SHEET_URL);
-                const csv = await response.text();
-                products = parseCSV(csv);
+                // 同时加载产品和品牌数据
+                const [productsRes, brandsRes] = await Promise.all([
+                    fetch(PRODUCTS_URL),
+                    fetch(BRANDS_URL)
+                ]);
+                
+                const productsCsv = await productsRes.text();
+                const brandsCsv = await brandsRes.text();
+                
+                products = parseCSV(productsCsv);
+                featuredBrands = parseBrandsCSV(brandsCsv);
+                
                 initFilters();
+                renderFeaturedBrands();
                 renderProducts();
             } catch (error) {
-                console.error('Error loading products:', error);
-                productsContainer.innerHTML = '<div class="empty-state"><p>Failed to load products. Please refresh.</p></div>';
+                console.error('Error loading data:', error);
+                productsContainer.innerHTML = '<div class="empty-state"><p>Failed to load. Please refresh.</p></div>';
             }
         }
 
+        // 渲染品牌专区
+        function renderFeaturedBrands() {
+            if (!featuredBrands.length) {
+                featuredBrandsContainer.innerHTML = '';
+                return;
+            }
+
+            featuredBrandsContainer.innerHTML = `
+                <h2 class="section-title">Featured <span>Brands</span></h2>
+                <p style="text-align: center; color: #666; margin-bottom: 24px;">All products from these brands have extra commission</p>
+                <div class="brands-grid">
+                    ${featuredBrands.map(b => `
+                        <div class="brand-card ${selectedBrands.has(b.id) ? 'selected' : ''}" onclick="toggleBrandSelection('${b.id}')">
+                            <div class="brand-card-name">${b.name}</div>
+                            <div class="brand-card-commission">+${b.commission} Extra</div>
+                            <div class="brand-card-desc">All products eligible for extra commission</div>
+                            <a href="${b.url}" target="_blank" class="brand-card-link" onclick="event.stopPropagation()">
+                                Browse Products →
+                            </a>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function toggleBrandSelection(id) {
+            selectedBrands.has(id) ? selectedBrands.delete(id) : selectedBrands.add(id);
+            update();
+            renderFeaturedBrands();
+        }
+
         function initFilters() {
-            // 清空并重新填充筛选器
             brandFilter.innerHTML = '<option value="">All Brands</option>';
             categoryFilter.innerHTML = '<option value="">All Categories</option>';
             [...new Set(products.map(p => p.brand))].forEach(b => brandFilter.add(new Option(b, b)));
@@ -325,7 +450,7 @@
         }
 
         function init() {
-            loadProducts();
+            loadData();
             setupEvents();
         }
 
@@ -399,18 +524,32 @@
         }
 
         function update() {
-            selectionCount.textContent = `${selectedProducts.size} selected`;
-            submitBtn.disabled = !selectedProducts.size;
+            const total = selectedProducts.size + selectedBrands.size;
+            selectionCount.textContent = `${total} selected`;
+            submitBtn.disabled = !total;
             renderProducts();
         }
 
         function showModal() {
-            const sel = products.filter(p => selectedProducts.has(p.id));
+            const selProducts = products.filter(p => selectedProducts.has(p.id));
+            const selBrands = featuredBrands.filter(b => selectedBrands.has(b.id));
+            const totalCount = selProducts.length + selBrands.length;
+            
             modalContent.innerHTML = `
                 <h2>Confirm selection</h2>
-                <p class="modal-subtitle">${sel.length} products selected</p>
+                <p class="modal-subtitle">${totalCount} item${totalCount > 1 ? 's' : ''} selected</p>
                 <div class="selected-products-list">
-                    ${sel.map(p => `
+                    ${selBrands.map(b => `
+                        <div class="selected-product-item">
+                            <div style="width:44px;height:44px;background:#FEF0ED;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;">🏷️</div>
+                            <div class="selected-product-details">
+                                <h4>${b.name} (All Products)</h4>
+                                <p>Brand · +${b.commission}</p>
+                            </div>
+                            <div class="remove-btn" onclick="removeBrand('${b.id}')">✕</div>
+                        </div>
+                    `).join('')}
+                    ${selProducts.map(p => `
                         <div class="selected-product-item">
                             <img src="${p.image || ''}" onerror="this.style.background='#eee'">
                             <div class="selected-product-details">
@@ -430,6 +569,13 @@
                 </div>
             `;
             submitModal.classList.add('active');
+        }
+
+        function removeBrand(id) {
+            selectedBrands.delete(id);
+            (selectedProducts.size + selectedBrands.size) ? showModal() : closeModal();
+            update();
+            renderFeaturedBrands();
         }
 
         function remove(id) {
@@ -453,10 +599,18 @@
             const name = $('name').value, email = $('email').value, notes = $('notes').value;
             if (!name || !email) return alert('Please fill in name and email');
             
-            const sel = products.filter(p => selectedProducts.has(p.id));
+            const selProducts = products.filter(p => selectedProducts.has(p.id));
+            const selBrands = featuredBrands.filter(b => selectedBrands.has(b.id));
             
             // 格式化选品列表
-            const productList = sel.map(p => `• ${p.brand} - ${p.name} (${p.commission})`).join('\n');
+            let productList = '';
+            if (selBrands.length) {
+                productList += '【品牌全选】\n' + selBrands.map(b => `• ${b.name} - All Products (+${b.commission})`).join('\n');
+            }
+            if (selProducts.length) {
+                if (productList) productList += '\n\n';
+                productList += '【单品选择】\n' + selProducts.map(p => `• ${p.brand} - ${p.name} (+${p.commission})`).join('\n');
+            }
             
             // 提交到 Google Form
             const formData = new FormData();
@@ -476,7 +630,7 @@
                     <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
                     <h3>Submitted!</h3>
                     <p>Thanks ${name}! We'll be in touch soon.</p>
-                    <br><button class="btn-primary" onclick="closeModal(); selectedProducts.clear(); update();">Done</button>
+                    <br><button class="btn-primary" onclick="closeModal(); selectedProducts.clear(); selectedBrands.clear(); update(); renderFeaturedBrands();">Done</button>
                 </div>
             `;
         }
