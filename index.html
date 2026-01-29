@@ -70,6 +70,9 @@
             background: #E8F5ED; color: #2D8B4E; padding: 6px 14px;
             border-radius: 100px; font-size: 13px; font-weight: 600;
         }
+        .brand-card-category {
+            font-size: 12px; color: #888; margin-bottom: 8px;
+        }
         .brand-card-desc { color: #666; font-size: 13px; margin-bottom: 12px; line-height: 1.4; }
         .brand-card-actions { display: flex; gap: 10px; margin-bottom: 12px; }
         .brand-card-link {
@@ -496,6 +499,7 @@
                                 <div class="brand-card-name">${b.name}</div>
                                 <div class="brand-card-commission">+${b.commission} Extra</div>
                             </div>
+                            <div class="brand-card-category">${b.category}</div>
                             <div class="brand-card-desc">All products from this brand are eligible for extra commission. Browse the store and paste product URLs below.</div>
                             <div class="brand-card-actions">
                                 <a href="${b.url}" target="_blank" class="brand-card-link">
