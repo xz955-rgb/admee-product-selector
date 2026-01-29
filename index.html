@@ -26,8 +26,8 @@
         }
         .badge svg { width: 18px; height: 18px; color: #F4846E; fill: #FEF0ED; }
         .header h1 {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: 52px; font-weight: 400; margin-bottom: 12px; line-height: 1.1;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 48px; font-weight: 600; margin-bottom: 12px; line-height: 1.15;
         }
         .header h1 span { color: #F4846E; }
         .header p { color: #666; font-size: 16px; max-width: 480px; margin: 0 auto; }
@@ -35,35 +35,48 @@
         /* Featured Brands Section */
         .featured-brands { margin-bottom: 40px; }
         .section-title {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: 28px; font-weight: 400; margin-bottom: 20px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 32px; font-weight: 600; margin-bottom: 20px;
             text-align: center;
         }
         .section-title span { color: #F4846E; }
-        .brands-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+        .brands-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
         .brand-card {
-            background: white; border-radius: 16px; padding: 24px;
+            background: white; border-radius: 16px; padding: 28px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.2s;
-            display: flex; flex-direction: column; align-items: center; text-align: center;
         }
-        .brand-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-        .brand-card.selected { box-shadow: 0 0 0 2px #F4846E, 0 8px 24px rgba(244,132,110,0.15); }
-        .brand-card { cursor: pointer; }
+        .brand-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+        .brand-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
         .brand-card-name {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: 22px; font-weight: 500; margin-bottom: 8px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 20px; font-weight: 600;
         }
         .brand-card-commission {
             background: #E8F5ED; color: #2D8B4E; padding: 6px 14px;
-            border-radius: 100px; font-size: 14px; font-weight: 600; margin-bottom: 12px;
+            border-radius: 100px; font-size: 13px; font-weight: 600;
         }
-        .brand-card-desc { color: #666; font-size: 14px; margin-bottom: 16px; }
+        .brand-card-desc { color: #666; font-size: 14px; margin-bottom: 16px; line-height: 1.5; }
+        .brand-card-actions { display: flex; gap: 10px; margin-bottom: 16px; }
         .brand-card-link {
-            background: #F4846E; color: white; padding: 12px 24px;
-            border-radius: 100px; text-decoration: none; font-size: 14px; font-weight: 500;
+            background: white; color: #F4846E; padding: 10px 18px; border: 1px solid #F4846E;
+            border-radius: 100px; text-decoration: none; font-size: 13px; font-weight: 500;
             transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
         }
-        .brand-card-link:hover { background: #e5745f; }
+        .brand-card-link:hover { background: #FEF0ED; }
+        .brand-url-section { border-top: 1px solid #f0f0e8; padding-top: 16px; }
+        .brand-url-label { font-size: 13px; font-weight: 500; margin-bottom: 8px; color: #333; }
+        .brand-url-input {
+            width: 100%; padding: 12px 14px; background: #F6F5EC; border: none;
+            border-radius: 10px; font-size: 14px; font-family: inherit; margin-bottom: 8px;
+        }
+        .brand-url-input:focus { outline: none; background: #EFEFE8; }
+        .brand-url-list { max-height: 120px; overflow-y: auto; }
+        .brand-url-item {
+            display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+            background: #FEF0ED; border-radius: 8px; margin-bottom: 6px; font-size: 13px;
+        }
+        .brand-url-item span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .brand-url-remove { color: #F4846E; cursor: pointer; font-weight: bold; }
 
         .divider { height: 1px; background: #e5e5e0; margin: 40px 0; }
 
@@ -114,7 +127,7 @@
         .brand-header:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
         .brand-toggle { color: #F4846E; font-size: 10px; transition: transform 0.2s; }
         .brand-toggle.collapsed { transform: rotate(-90deg); }
-        .brand-name { font-family: 'Playfair Display', Georgia, serif; font-size: 18px; font-weight: 500; }
+        .brand-name { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 18px; font-weight: 600; }
         .brand-count { color: #888; font-size: 13px; }
         .brand-select-all {
             margin-left: auto; color: #F4846E; font-size: 13px;
@@ -181,7 +194,7 @@
             transform: scale(0.95); transition: all 0.2s;
         }
         .modal-overlay.active .modal { transform: scale(1); }
-        .modal h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 24px; margin-bottom: 6px; }
+        .modal h2 { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 24px; font-weight: 600; margin-bottom: 6px; }
         .modal-subtitle { color: #666; margin-bottom: 20px; font-size: 14px; }
         .selected-products-list { margin-bottom: 20px; max-height: 180px; overflow-y: auto; }
         .selected-product-item {
@@ -208,7 +221,7 @@
         .success-message { text-align: center; padding: 24px 12px; }
         .success-icon { width: 56px; height: 56px; background: #E8F5ED; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
         .success-icon svg { width: 28px; height: 28px; color: #2D8B4E; }
-        .success-message h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 20px; margin-bottom: 8px; }
+        .success-message h3 { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 20px; font-weight: 600; margin-bottom: 8px; }
         .success-message p { color: #666; font-size: 14px; }
 
         .empty-state { text-align: center; padding: 40px 20px; color: #888; }
@@ -292,7 +305,7 @@
         let products = [];
         let featuredBrands = [];
         let selectedProducts = new Set();
-        let selectedBrands = new Set();
+        let brandProductUrls = {}; // { brandId: [url1, url2, ...] }
         let collapsedBrands = new Set();
 
         const $ = id => document.getElementById(id);
@@ -420,26 +433,61 @@
 
             featuredBrandsContainer.innerHTML = `
                 <h2 class="section-title">Featured <span>Brands</span></h2>
-                <p style="text-align: center; color: #666; margin-bottom: 24px;">All products from these brands have extra commission</p>
+                <p style="text-align: center; color: #666; margin-bottom: 24px;">Browse products and paste URLs you want to promote</p>
                 <div class="brands-grid">
-                    ${featuredBrands.map(b => `
-                        <div class="brand-card ${selectedBrands.has(b.id) ? 'selected' : ''}" onclick="toggleBrandSelection('${b.id}')">
-                            <div class="brand-card-name">${b.name}</div>
-                            <div class="brand-card-commission">+${b.commission} Extra</div>
-                            <div class="brand-card-desc">All products eligible for extra commission</div>
-                            <a href="${b.url}" target="_blank" class="brand-card-link" onclick="event.stopPropagation()">
-                                Browse Products →
-                            </a>
+                    ${featuredBrands.map(b => {
+                        const urls = brandProductUrls[b.id] || [];
+                        return `
+                        <div class="brand-card">
+                            <div class="brand-card-header">
+                                <div class="brand-card-name">${b.name}</div>
+                                <div class="brand-card-commission">+${b.commission} Extra</div>
+                            </div>
+                            <div class="brand-card-desc">All products from this brand are eligible for extra commission. Browse the store and paste product URLs below.</div>
+                            <div class="brand-card-actions">
+                                <a href="${b.url}" target="_blank" class="brand-card-link">
+                                    Browse Store →
+                                </a>
+                            </div>
+                            <div class="brand-url-section">
+                                <div class="brand-url-label">Paste product URLs:</div>
+                                <input type="text" class="brand-url-input" 
+                                    placeholder="Paste Amazon product URL here..." 
+                                    onkeypress="if(event.key==='Enter') addBrandUrl('${b.id}', this.value, this)">
+                                <div class="brand-url-list" id="urlList_${b.id}">
+                                    ${urls.map((url, i) => `
+                                        <div class="brand-url-item">
+                                            <span>${url}</span>
+                                            <span class="brand-url-remove" onclick="removeBrandUrl('${b.id}', ${i})">✕</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
                         </div>
-                    `).join('')}
+                    `}).join('')}
                 </div>
             `;
         }
 
-        function toggleBrandSelection(id) {
-            selectedBrands.has(id) ? selectedBrands.delete(id) : selectedBrands.add(id);
-            update();
-            renderFeaturedBrands();
+        function addBrandUrl(brandId, url, input) {
+            url = url.trim();
+            if (!url) return;
+            if (!brandProductUrls[brandId]) brandProductUrls[brandId] = [];
+            if (!brandProductUrls[brandId].includes(url)) {
+                brandProductUrls[brandId].push(url);
+                input.value = '';
+                renderFeaturedBrands();
+                update();
+            }
+        }
+
+        function removeBrandUrl(brandId, index) {
+            if (brandProductUrls[brandId]) {
+                brandProductUrls[brandId].splice(index, 1);
+                if (brandProductUrls[brandId].length === 0) delete brandProductUrls[brandId];
+                renderFeaturedBrands();
+                update();
+            }
         }
 
         function initFilters() {
@@ -524,7 +572,8 @@
         }
 
         function update() {
-            const total = selectedProducts.size + selectedBrands.size;
+            const brandUrlCount = Object.values(brandProductUrls).flat().length;
+            const total = selectedProducts.size + brandUrlCount;
             selectionCount.textContent = `${total} selected`;
             submitBtn.disabled = !total;
             renderProducts();
@@ -532,21 +581,32 @@
 
         function showModal() {
             const selProducts = products.filter(p => selectedProducts.has(p.id));
-            const selBrands = featuredBrands.filter(b => selectedBrands.has(b.id));
-            const totalCount = selProducts.length + selBrands.length;
+            const brandUrlCount = Object.values(brandProductUrls).flat().length;
+            const totalCount = selProducts.length + brandUrlCount;
+            
+            // 获取品牌URL列表用于显示
+            const brandUrlItems = [];
+            for (const brandId in brandProductUrls) {
+                const brand = featuredBrands.find(b => b.id === brandId);
+                if (brand) {
+                    brandProductUrls[brandId].forEach((url, idx) => {
+                        brandUrlItems.push({ brand, url, brandId, idx });
+                    });
+                }
+            }
             
             modalContent.innerHTML = `
-                <h2>Confirm selection</h2>
+                <h2 style="font-family: Inter, sans-serif; font-weight: 600;">Confirm selection</h2>
                 <p class="modal-subtitle">${totalCount} item${totalCount > 1 ? 's' : ''} selected</p>
                 <div class="selected-products-list">
-                    ${selBrands.map(b => `
+                    ${brandUrlItems.map(item => `
                         <div class="selected-product-item">
-                            <div style="width:44px;height:44px;background:#FEF0ED;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;">🏷️</div>
+                            <div style="width:44px;height:44px;background:#FEF0ED;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">🔗</div>
                             <div class="selected-product-details">
-                                <h4>${b.name} (All Products)</h4>
-                                <p>Brand · +${b.commission}</p>
+                                <h4 style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px;">${item.url}</h4>
+                                <p>${item.brand.name} · +${item.brand.commission}</p>
                             </div>
-                            <div class="remove-btn" onclick="removeBrand('${b.id}')">✕</div>
+                            <div class="remove-btn" onclick="removeBrandUrlFromModal('${item.brandId}', ${item.idx})">✕</div>
                         </div>
                     `).join('')}
                     ${selProducts.map(p => `
@@ -571,11 +631,10 @@
             submitModal.classList.add('active');
         }
 
-        function removeBrand(id) {
-            selectedBrands.delete(id);
-            (selectedProducts.size + selectedBrands.size) ? showModal() : closeModal();
-            update();
-            renderFeaturedBrands();
+        function removeBrandUrlFromModal(brandId, index) {
+            removeBrandUrl(brandId, index);
+            const brandUrlCount = Object.values(brandProductUrls).flat().length;
+            (selectedProducts.size + brandUrlCount) ? showModal() : closeModal();
         }
 
         function remove(id) {
@@ -600,15 +659,28 @@
             if (!name || !email) return alert('Please fill in name and email');
             
             const selProducts = products.filter(p => selectedProducts.has(p.id));
-            const selBrands = featuredBrands.filter(b => selectedBrands.has(b.id));
             
             // 格式化选品列表
             let productList = '';
-            if (selBrands.length) {
-                productList += '【品牌全选】\n' + selBrands.map(b => `• ${b.name} - All Products (+${b.commission})`).join('\n');
+            
+            // 品牌产品 URLs
+            const hasBrandUrls = Object.keys(brandProductUrls).length > 0;
+            if (hasBrandUrls) {
+                productList += '【品牌产品选择】\n';
+                for (const brandId in brandProductUrls) {
+                    const brand = featuredBrands.find(b => b.id === brandId);
+                    if (brand) {
+                        productList += `\n${brand.name} (+${brand.commission}):\n`;
+                        brandProductUrls[brandId].forEach(url => {
+                            productList += `• ${url}\n`;
+                        });
+                    }
+                }
             }
+            
+            // 单品选择
             if (selProducts.length) {
-                if (productList) productList += '\n\n';
+                if (productList) productList += '\n';
                 productList += '【单品选择】\n' + selProducts.map(p => `• ${p.brand} - ${p.name} (+${p.commission})`).join('\n');
             }
             
@@ -628,9 +700,9 @@
             modalContent.innerHTML = `
                 <div class="success-message">
                     <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
-                    <h3>Submitted!</h3>
+                    <h3 style="font-family: Inter, sans-serif; font-weight: 600;">Submitted!</h3>
                     <p>Thanks ${name}! We'll be in touch soon.</p>
-                    <br><button class="btn-primary" onclick="closeModal(); selectedProducts.clear(); selectedBrands.clear(); update(); renderFeaturedBrands();">Done</button>
+                    <br><button class="btn-primary" onclick="closeModal(); selectedProducts.clear(); brandProductUrls={}; update(); renderFeaturedBrands();">Done</button>
                 </div>
             `;
         }
