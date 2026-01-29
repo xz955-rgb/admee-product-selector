@@ -440,12 +440,36 @@
 
         function closeModal() { submitModal.classList.remove('active'); }
 
+        // Google Form 配置
+        const FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLScQugWQtd6zP1Exc_TvzAFw-HsFhVBf9wh3nm9EUBZCdcLuqQ/formResponse';
+        const FORM_FIELDS = {
+            name: 'entry.2025822866',
+            email: 'entry.1105978475',
+            notes: 'entry.1806151328',
+            products: 'entry.830522081'
+        };
+
         function submit() {
             const name = $('name').value, email = $('email').value, notes = $('notes').value;
             if (!name || !email) return alert('Please fill in name and email');
             
             const sel = products.filter(p => selectedProducts.has(p.id));
-            console.log('Submission:', { name, email, notes, products: sel });
+            
+            // 格式化选品列表
+            const productList = sel.map(p => `• ${p.brand} - ${p.name} (${p.commission})`).join('\n');
+            
+            // 提交到 Google Form
+            const formData = new FormData();
+            formData.append(FORM_FIELDS.name, name);
+            formData.append(FORM_FIELDS.email, email);
+            formData.append(FORM_FIELDS.notes, notes);
+            formData.append(FORM_FIELDS.products, productList);
+            
+            fetch(FORM_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
+            });
 
             modalContent.innerHTML = `
                 <div class="success-message">
