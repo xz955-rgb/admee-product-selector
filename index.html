@@ -23,41 +23,36 @@
     </style>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
+        html, body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: #F6F5EC;
-            min-height: 100vh;
             color: #1a1a1a;
+            /* iframe 优化：去除 body 滚动，让父页面控制 */
+            overflow-x: hidden;
         }
-        .container { max-width: 1100px; margin: 0 auto; padding: 80px 20px 40px; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px 20px 40px; }
 
-        .header { text-align: center; margin-bottom: 40px; }
-        .badge {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: white; padding: 10px 18px; border-radius: 100px;
-            font-size: 14px; margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .badge svg { width: 18px; height: 18px; color: #F4846E; fill: #FEF0ED; }
+        .header { text-align: center; margin-bottom: 24px; }
+        .badge { display: none; } /* 隐藏重复的标签 */
         .header h1 {
             font-family: 'Open Sauce Two', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            font-size: 72px; font-weight: 500; margin-bottom: 12px; line-height: 1.1;
-            letter-spacing: -0.05em;
+            font-size: 48px; font-weight: 500; margin-bottom: 8px; line-height: 1.1;
+            letter-spacing: -0.03em;
         }
         .header h1 span { color: #F4846E; }
-        .header p { color: #666; font-size: 16px; max-width: 480px; margin: 0 auto; }
+        .header p { color: #666; font-size: 15px; max-width: 480px; margin: 0 auto; }
 
         /* Featured Brands Section */
-        .featured-brands { margin-bottom: 40px; }
+        .featured-brands { margin-bottom: 30px; }
         .section-title {
             font-family: 'Open Sauce Two', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            font-size: 40px; font-weight: 500; margin-bottom: 20px;
-            text-align: center; letter-spacing: -0.03em;
+            font-size: 28px; font-weight: 500; margin-bottom: 16px;
+            text-align: center; letter-spacing: -0.02em;
         }
         .section-title span { color: #F4846E; }
         .brands-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
         .brand-card {
-            background: white; border-radius: 16px; padding: 28px;
+            background: white; border-radius: 16px; padding: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.2s;
         }
         .brand-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
@@ -70,22 +65,22 @@
             background: #E8F5ED; color: #2D8B4E; padding: 6px 14px;
             border-radius: 100px; font-size: 13px; font-weight: 600;
         }
-        .brand-card-desc { color: #666; font-size: 14px; margin-bottom: 16px; line-height: 1.5; }
-        .brand-card-actions { display: flex; gap: 10px; margin-bottom: 16px; }
+        .brand-card-desc { color: #666; font-size: 13px; margin-bottom: 12px; line-height: 1.4; }
+        .brand-card-actions { display: flex; gap: 10px; margin-bottom: 12px; }
         .brand-card-link {
             background: white; color: #F4846E; padding: 10px 18px; border: 1px solid #F4846E;
             border-radius: 100px; text-decoration: none; font-size: 13px; font-weight: 500;
             transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
         }
         .brand-card-link:hover { background: #FEF0ED; }
-        .brand-url-section { border-top: 1px solid #f0f0e8; padding-top: 16px; }
-        .brand-url-label { font-size: 13px; font-weight: 500; margin-bottom: 8px; color: #333; }
+        .brand-url-section { border-top: 1px solid #f0f0e8; padding-top: 12px; }
+        .brand-url-label { font-size: 12px; font-weight: 500; margin-bottom: 6px; color: #333; }
         .brand-url-input {
-            width: 100%; padding: 12px 14px; background: #F6F5EC; border: none;
-            border-radius: 10px; font-size: 14px; font-family: inherit; margin-bottom: 8px;
+            width: 100%; padding: 10px 12px; background: #F6F5EC; border: 1px solid #e0e0d8;
+            border-radius: 8px; font-size: 13px; font-family: inherit;
         }
-        .brand-url-input:focus { outline: none; background: #EFEFE8; }
-        .brand-url-list { max-height: 120px; overflow-y: auto; }
+        .brand-url-input:focus { outline: none; border-color: #F4846E; background: white; }
+        .brand-url-list { max-height: 100px; overflow-y: auto; margin-top: 8px; }
         .brand-url-item {
             display: flex; align-items: center; gap: 8px; padding: 8px 12px;
             background: #FEF0ED; border-radius: 8px; margin-bottom: 6px; font-size: 13px;
@@ -93,23 +88,23 @@
         .brand-url-item span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .brand-url-remove { color: #F4846E; cursor: pointer; font-weight: bold; }
 
-        .divider { height: 1px; background: #e5e5e0; margin: 40px 0; }
+        .divider { height: 1px; background: #e5e5e0; margin: 24px 0; }
 
         .selection-bar {
             background: white; border-radius: 14px; padding: 16px 20px;
-            margin-bottom: 24px; display: flex; justify-content: space-between;
+            margin-bottom: 20px; display: flex; justify-content: space-between;
             align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            position: sticky; top: 12px; z-index: 100;
+            position: sticky; top: 0; z-index: 100;
         }
-        .selection-info { display: flex; align-items: center; gap: 12px; }
+        .selection-info { display: flex; align-items: center; gap: 10px; }
         .selection-count {
-            background: #FEF0ED; color: #F4846E; padding: 8px 16px;
-            border-radius: 100px; font-weight: 600; font-size: 14px;
+            background: #FEF0ED; color: #F4846E; padding: 6px 14px;
+            border-radius: 100px; font-weight: 600; font-size: 13px;
         }
-        .selection-text { color: #666; font-size: 14px; }
+        .selection-text { color: #666; font-size: 13px; }
         .submit-btn {
             background: #F4846E; color: white; border: none;
-            padding: 12px 22px; border-radius: 100px; font-size: 14px;
+            padding: 10px 18px; border-radius: 100px; font-size: 13px;
             font-weight: 500; cursor: pointer; transition: all 0.2s;
             display: flex; align-items: center; gap: 6px;
         }
@@ -465,14 +460,17 @@
                                 </a>
                             </div>
                             <div class="brand-url-section">
-                                <div class="brand-url-label">Paste product URLs (one or multiple):</div>
-                                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                                    <input type="text" class="brand-url-input" id="input_${b.id}" style="margin-bottom: 0; flex: 1;"
-                                        placeholder="Paste Amazon URL here (Cmd+V)..." 
-                                        onkeydown="if(event.key==='Enter') { event.preventDefault(); addBrandUrl('${b.id}', this.value, this); }"
-                                        onpaste="handlePaste(event, '${b.id}')">
+                                <div class="brand-url-label">Add product URLs:</div>
+                                <div style="display: flex; gap: 6px;">
+                                    <input type="text" class="brand-url-input" id="input_${b.id}" style="flex: 1;"
+                                        placeholder="Paste or type Amazon URL..." 
+                                        onkeydown="if(event.key==='Enter') { event.preventDefault(); addBrandUrl('${b.id}', this.value, this); }">
+                                    <button onclick="pasteFromClipboard('${b.id}')" 
+                                        style="background: white; color: #666; border: 1px solid #ddd; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; white-space: nowrap;">
+                                        📋 Paste
+                                    </button>
                                     <button onclick="addBrandUrl('${b.id}', document.getElementById('input_${b.id}').value, document.getElementById('input_${b.id}'))" 
-                                        style="background: #F4846E; color: white; border: none; padding: 12px 16px; border-radius: 10px; cursor: pointer; font-size: 14px; white-space: nowrap;">
+                                        style="background: #F4846E; color: white; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; white-space: nowrap;">
                                         Add
                                     </button>
                                 </div>
@@ -480,7 +478,7 @@
                                     <div class="brand-url-list" id="urlList_${b.id}">
                                         ${urls.map((url, i) => `
                                             <div class="brand-url-item">
-                                                <span>${url.length > 50 ? url.substring(0, 50) + '...' : url}</span>
+                                                <span>${url.length > 45 ? url.substring(0, 45) + '...' : url}</span>
                                                 <span class="brand-url-remove" onclick="removeBrandUrl('${b.id}', ${i})">✕</span>
                                             </div>
                                         `).join('')}
@@ -510,44 +508,60 @@
             }
         }
 
-        function handlePaste(event, brandId) {
-            event.preventDefault();
-            
-            // 直接从剪贴板获取数据
-            const clipboardData = event.clipboardData || window.clipboardData;
-            const text = clipboardData.getData('text').trim();
-            
-            if (!text) return;
-            
-            // 提取所有 URL（支持多个，用换行、空格或逗号分隔）
-            const urlPattern = /https?:\/\/[^\s,\n]+/g;
-            let urls = text.match(urlPattern) || [];
-            
-            if (urls.length === 0) {
-                // 如果没有匹配到 URL 格式，把整个文本当作一个 URL 尝试
-                if (text.includes('amazon.com') || text.includes('amzn.')) {
-                    urls.push(text);
+        // 使用 Clipboard API 粘贴（点击按钮触发）
+        async function pasteFromClipboard(brandId) {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (!text || !text.trim()) {
+                    alert('Clipboard is empty');
+                    return;
+                }
+                
+                processUrls(brandId, text.trim());
+            } catch (err) {
+                // 如果 Clipboard API 不可用，提示用户手动粘贴
+                const input = document.getElementById('input_' + brandId);
+                if (input) {
+                    input.focus();
+                    alert('Please use Cmd+V to paste, or type the URL directly');
                 }
             }
+        }
+        
+        // 处理 URL 文本（支持多个）
+        function processUrls(brandId, text) {
+            // 提取所有 URL
+            const urlPattern = /https?:\/\/[^\s,\n<>"]+/g;
+            let urls = text.match(urlPattern) || [];
             
-            if (urls.length > 0) {
-                if (!brandProductUrls[brandId]) brandProductUrls[brandId] = [];
-                let added = 0;
-                urls.forEach(url => {
-                    url = url.trim();
-                    if (url && !brandProductUrls[brandId].includes(url)) {
-                        brandProductUrls[brandId].push(url);
-                        added++;
-                    }
-                });
-                if (added > 0) {
-                    renderFeaturedBrands();
-                    update();
-                    setTimeout(() => {
-                        const newInput = document.getElementById('input_' + brandId);
-                        if (newInput) newInput.focus();
-                    }, 100);
+            if (urls.length === 0 && (text.includes('amazon.com') || text.includes('amzn.'))) {
+                urls.push(text);
+            }
+            
+            if (urls.length === 0) {
+                alert('No valid URL found');
+                return;
+            }
+            
+            if (!brandProductUrls[brandId]) brandProductUrls[brandId] = [];
+            let added = 0;
+            urls.forEach(url => {
+                url = url.trim();
+                if (url && !brandProductUrls[brandId].includes(url)) {
+                    brandProductUrls[brandId].push(url);
+                    added++;
                 }
+            });
+            
+            if (added > 0) {
+                renderFeaturedBrands();
+                update();
+                setTimeout(() => {
+                    const newInput = document.getElementById('input_' + brandId);
+                    if (newInput) newInput.focus();
+                }, 100);
+            } else {
+                alert('URL already added');
             }
         }
 
@@ -699,6 +713,12 @@
                 </div>
             `;
             submitModal.classList.add('active');
+            // 滚动到顶部确保弹窗可见
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // 通知父页面（如果在 iframe 中）
+            if (window.parent !== window) {
+                window.parent.postMessage({ type: 'scrollToTop' }, '*');
+            }
         }
 
         function removeBrandUrlFromModal(brandId, index) {
@@ -785,6 +805,25 @@
             submitModal.onclick = e => e.target === submitModal && closeModal();
             document.onkeydown = e => e.key === 'Escape' && closeModal();
         }
+
+        // iframe 高度自适应通信
+        function sendHeightToParent() {
+            if (window.parent !== window) {
+                const height = document.body.scrollHeight;
+                window.parent.postMessage({ type: 'setHeight', height: height }, '*');
+            }
+        }
+        
+        // 监听页面变化，发送高度
+        const resizeObserver = new ResizeObserver(() => sendHeightToParent());
+        resizeObserver.observe(document.body);
+        
+        // 初始发送高度
+        window.addEventListener('load', () => {
+            sendHeightToParent();
+            // 延迟再发一次，确保内容加载完成
+            setTimeout(sendHeightToParent, 1000);
+        });
 
         init();
     </script>
