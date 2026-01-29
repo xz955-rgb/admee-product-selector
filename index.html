@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdMee - Product Selection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #F5F5F0;
+            min-height: 100vh;
+            color: #1a1a1a;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+
+        .header { text-align: center; margin-bottom: 40px; }
+        .badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: white; padding: 10px 18px; border-radius: 100px;
+            font-size: 14px; margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .badge svg { width: 18px; height: 18px; color: #F4846E; }
+        .header h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 42px; font-weight: 400; margin-bottom: 12px;
+        }
+        .header h1 span { color: #F4846E; }
+        .header p { color: #666; font-size: 15px; max-width: 480px; margin: 0 auto; }
+
+        .selection-bar {
+            background: white; border-radius: 14px; padding: 16px 20px;
+            margin-bottom: 24px; display: flex; justify-content: space-between;
+            align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            position: sticky; top: 12px; z-index: 100;
+        }
+        .selection-info { display: flex; align-items: center; gap: 12px; }
+        .selection-count {
+            background: #FEF0ED; color: #F4846E; padding: 8px 16px;
+            border-radius: 100px; font-weight: 600; font-size: 14px;
+        }
+        .selection-text { color: #666; font-size: 14px; }
+        .submit-btn {
+            background: #F4846E; color: white; border: none;
+            padding: 12px 22px; border-radius: 100px; font-size: 14px;
+            font-weight: 500; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .submit-btn:hover { background: #e5745f; }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .filters { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+        .search-box { flex: 1; min-width: 180px; position: relative; }
+        .search-box input {
+            width: 100%; padding: 12px 14px 12px 42px; background: white;
+            border: none; border-radius: 10px; font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .search-box input:focus { outline: none; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #999; }
+        .filter-select {
+            padding: 12px 36px 12px 14px; background: white; border: none;
+            border-radius: 10px; font-size: 14px; cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23666' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 12px center;
+        }
+
+        .brand-section { margin-bottom: 32px; }
+        .brand-header {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+            cursor: pointer; padding: 14px 16px; background: white;
+            border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .brand-header:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        .brand-toggle { color: #F4846E; font-size: 10px; transition: transform 0.2s; }
+        .brand-toggle.collapsed { transform: rotate(-90deg); }
+        .brand-name { font-family: 'Playfair Display', Georgia, serif; font-size: 18px; font-weight: 500; }
+        .brand-count { color: #888; font-size: 13px; }
+        .brand-select-all {
+            margin-left: auto; color: #F4846E; font-size: 13px;
+            font-weight: 500; cursor: pointer; padding: 6px 12px; border-radius: 100px;
+        }
+        .brand-select-all:hover { background: #FEF0ED; }
+
+        .product-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px;
+        }
+        .product-grid.collapsed { display: none; }
+
+        .product-card {
+            background: white; border-radius: 14px; overflow: hidden;
+            cursor: pointer; transition: all 0.2s; position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .product-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+        .product-card.selected { box-shadow: 0 0 0 2px #F4846E, 0 8px 20px rgba(244,132,110,0.15); }
+        .product-card.selected .check-indicator { opacity: 1; transform: scale(1); }
+        .check-indicator {
+            position: absolute; top: 10px; right: 10px; width: 26px; height: 26px;
+            background: #F4846E; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center;
+            opacity: 0; transform: scale(0.5); transition: all 0.15s; z-index: 10;
+        }
+        .check-indicator svg { width: 14px; height: 14px; color: white; }
+
+        .product-image-wrapper {
+            width: 100%; height: 200px; background: #fff;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+            padding: 12px;
+        }
+        .product-image { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .product-placeholder { font-size: 48px; opacity: 0.3; }
+
+        .product-info { padding: 14px; }
+        .product-name {
+            font-size: 14px; font-weight: 500; color: #1a1a1a;
+            line-height: 1.35; margin-bottom: 8px; min-height: 38px;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .product-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .product-commission {
+            background: #E8F5ED; color: #2D8B4E; padding: 4px 10px;
+            border-radius: 100px; font-size: 12px; font-weight: 600;
+        }
+        .product-category { font-size: 11px; color: #888; }
+        .product-link {
+            color: #F4846E; font-size: 12px; text-decoration: none; font-weight: 500;
+            display: inline-flex; align-items: center; gap: 4px;
+        }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.2s;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal {
+            background: white; border-radius: 18px; padding: 28px;
+            max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;
+            transform: scale(0.95); transition: all 0.2s;
+        }
+        .modal-overlay.active .modal { transform: scale(1); }
+        .modal h2 { font-family: 'Playfair Display', Georgia, serif; font-size: 24px; margin-bottom: 6px; }
+        .modal-subtitle { color: #666; margin-bottom: 20px; font-size: 14px; }
+        .selected-products-list { margin-bottom: 20px; max-height: 180px; overflow-y: auto; }
+        .selected-product-item {
+            display: flex; align-items: center; gap: 10px; padding: 10px;
+            background: #F5F5F0; border-radius: 8px; margin-bottom: 6px;
+        }
+        .selected-product-item img { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: #eee; }
+        .selected-product-details { flex: 1; }
+        .selected-product-details h4 { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+        .selected-product-details p { font-size: 11px; color: #888; }
+        .remove-btn { color: #F4846E; cursor: pointer; padding: 4px; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 11px 12px; background: #F5F5F0;
+            border: none; border-radius: 8px; font-size: 14px; font-family: inherit;
+        }
+        .form-group input:focus, .form-group textarea:focus { outline: none; background: #EFEFE8; }
+        .form-group textarea { resize: vertical; min-height: 70px; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .btn-secondary { padding: 11px 18px; background: #F5F5F0; border: none; border-radius: 100px; color: #666; font-size: 14px; cursor: pointer; }
+        .btn-primary { padding: 11px 22px; background: #F4846E; border: none; border-radius: 100px; color: white; font-size: 14px; font-weight: 500; cursor: pointer; }
+
+        .success-message { text-align: center; padding: 24px 12px; }
+        .success-icon { width: 56px; height: 56px; background: #E8F5ED; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+        .success-icon svg { width: 28px; height: 28px; color: #2D8B4E; }
+        .success-message h3 { font-family: 'Playfair Display', Georgia, serif; font-size: 20px; margin-bottom: 8px; }
+        .success-message p { color: #666; font-size: 14px; }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: #888; }
+
+        @media (max-width: 640px) {
+            .container { padding: 24px 16px; }
+            .header h1 { font-size: 30px; }
+            .selection-bar { flex-direction: column; gap: 12px; padding: 14px; }
+            .filters { flex-direction: column; }
+            .product-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .product-image-wrapper { height: 140px; }
+            .product-info { padding: 12px; }
+            .product-name { font-size: 13px; min-height: 34px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                Product Selection
+            </div>
+            <h1>Select your <span>products</span></h1>
+            <p>Choose the products you'd like to promote</p>
+        </header>
+
+        <div class="selection-bar">
+            <div class="selection-info">
+                <span class="selection-count" id="selectionCount">0 selected</span>
+                <span class="selection-text">Click to select</span>
+            </div>
+            <button class="submit-btn" id="submitBtn" disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+                Submit
+            </button>
+        </div>
+
+        <div class="filters">
+            <div class="search-box">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Search products...">
+            </div>
+            <select class="filter-select" id="brandFilter">
+                <option value="">All Brands</option>
+            </select>
+            <select class="filter-select" id="categoryFilter">
+                <option value="">All Categories</option>
+            </select>
+        </div>
+
+        <div id="productsContainer"></div>
+    </div>
+
+    <div class="modal-overlay" id="submitModal">
+        <div class="modal"><div id="modalContent"></div></div>
+    </div>
+
+    <script>
+        // ========================================
+        // 产品数据
+        // ========================================
+        const products = [
+            // Saodimallsu - Clothing - 2.50% 佣金
+            { id: 1, brand: "Saodimallsu", name: "Oversized Cable Knit Sweater", category: "Clothing", commission: "2.50%", link: "https://www.amazon.com/dp/B0FC6D1YTY?th=1&psc=1", image: "https://m.media-amazon.com/images/I/71tBCsdqwQL._AC_SY879_.jpg" },
+            { id: 2, brand: "Saodimallsu", name: "Color Block Cropped Sweaters", category: "Clothing", commission: "2.50%", link: "https://www.amazon.com/dp/B0FC6LCKKJ?th=1&psc=1", image: "https://m.media-amazon.com/images/I/71ExeJX4ioL._AC_SX679_.jpg" },
+            { id: 3, brand: "Saodimallsu", name: "Long Cardigan Sweaters", category: "Clothing", commission: "2.50%", link: "https://www.amazon.com/dp/B0FBRH3V84?th=1&psc=1", image: "https://m.media-amazon.com/images/I/710FZFTkd6L._AC_SY879_.jpg" },
+            { id: 4, brand: "Saodimallsu", name: "Cardigan Sweaters Open Front", category: "Clothing", commission: "2.50%", link: "https://www.amazon.com/dp/B0F8VPS5M6?th=1&psc=1", image: "https://m.media-amazon.com/images/I/81e3ny2-stL._AC_SY879_.jpg" },
+            { id: 5, brand: "Saodimallsu", name: "Pajama Sets Striped 2 Piece", category: "Clothing", commission: "2.50%", link: "https://www.amazon.com/dp/B0DJNW2Q2D?th=1&psc=1", image: "https://m.media-amazon.com/images/I/81i5aXzu8fL._AC_SY879_.jpg" },
+            { id: 6, brand: "Saodimallsu", name: "2 Piece Outfits Sweater Sets", category: "Clothing", commission: "2.50%", link: "https://www.amazon.com/dp/B0G1LNPB2F?th=1&psc=1", image: "https://m.media-amazon.com/images/I/61PaB-7Zc7L._AC_SY879_.jpg" },
+            { id: 7, brand: "Saodimallsu", name: "Cotton Cargo Pants", category: "Clothing", commission: "2.50%", link: "https://www.amazon.com/dp/B0FF1RNG5L?th=1&psc=1", image: "https://m.media-amazon.com/images/I/61PvNthrP9L._AC_SY879_.jpg" },
+            { id: 8, brand: "Saodimallsu", name: "High Waisted Denim Shorts", category: "Clothing", commission: "2.50%", link: "https://www.amazon.com/dp/B0G1LNHKTX?th=1&psc=1", image: "https://m.media-amazon.com/images/I/71WorHqWqBL._AC_SY879_.jpg" },
+            
+            // Montana West - Bags & Packs & Accessories - 12.50% 佣金
+            { id: 9, brand: "Montana West", name: "Slim Wallet", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FJCVKH2R?th=1", image: "https://m.media-amazon.com/images/I/71+MrY1cuOL._AC_SY300_SX300_.jpg" },
+            { id: 10, brand: "Montana West", name: "Clear Bag for Stadium Events", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FHQ4F4HG?th=1", image: "https://m.media-amazon.com/images/I/61J95j6pwWL._AC_SY695_.jpg" },
+            { id: 11, brand: "Montana West", name: "Crossbody Bags for Women", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FHKTQVJM?th=1", image: "https://m.media-amazon.com/images/I/71QlOG3D2mL._AC_SY695_.jpg" },
+            { id: 12, brand: "Montana West", name: "Crossbody Bag for Women Game Day", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FHPQ68CC?th=1", image: "https://m.media-amazon.com/images/I/71ZKodL8VqL._AC_SY695_.jpg" },
+            { id: 13, brand: "Montana West", name: "Crossbody Box Purse", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FL7J1VXD?th=1", image: "https://m.media-amazon.com/images/I/71b4PufmxRL._AC_SY695_.jpg" },
+            { id: 14, brand: "Montana West", name: "NCAA Fan Purse with Adjustable Strap", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FLY5626C?th=1", image: "https://m.media-amazon.com/images/I/71vCPPcuo9L._AC_SY300_SX300_.jpg" },
+            { id: 15, brand: "Montana West", name: "Mini Tote Bag", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FLY68TQH?th=1", image: "https://m.media-amazon.com/images/I/71ugNDUvZAL._AC_SY695_.jpg" },
+            { id: 16, brand: "Montana West", name: "Wristlet Purse for Women", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FJLR4MWQ?th=1", image: "https://m.media-amazon.com/images/I/71lSW8W9DRL._AC_SY695_.jpg" },
+            { id: 17, brand: "Montana West", name: "Zip Around Wallet with Lanyard", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FJLTHGY3?th=1", image: "https://m.media-amazon.com/images/I/71w8xGZC5IL._AC_SY300_SX300_.jpg" },
+            { id: 18, brand: "Montana West", name: "Large Travel Duffel Bag", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FHQ4ZJ9L?th=1", image: "https://m.media-amazon.com/images/I/71MypUYxbsL._AC_SL1500_.jpg" },
+            { id: 19, brand: "Montana West", name: "Wristlet Wallets", category: "Bags & Packs & Accessories", commission: "12.50%", link: "https://www.amazon.com/dp/B0FJLSXZRM?th=1", image: "https://m.media-amazon.com/images/I/71inei5mb5L._AC_SY300_SX300_.jpg" }
+        ];
+        // ========================================
+
+        let selectedProducts = new Set();
+        let collapsedBrands = new Set();
+
+        const $ = id => document.getElementById(id);
+        const productsContainer = $('productsContainer');
+        const selectionCount = $('selectionCount');
+        const submitBtn = $('submitBtn');
+        const searchInput = $('searchInput');
+        const brandFilter = $('brandFilter');
+        const categoryFilter = $('categoryFilter');
+        const submitModal = $('submitModal');
+        const modalContent = $('modalContent');
+
+        function init() {
+            [...new Set(products.map(p => p.brand))].forEach(b => brandFilter.add(new Option(b, b)));
+            [...new Set(products.map(p => p.category))].forEach(c => categoryFilter.add(new Option(c, c)));
+            renderProducts();
+            setupEvents();
+        }
+
+        function getFiltered() {
+            const s = searchInput.value.toLowerCase();
+            const b = brandFilter.value;
+            const c = categoryFilter.value;
+            return products.filter(p => 
+                p.name.toLowerCase().includes(s) && 
+                (!b || p.brand === b) && 
+                (!c || p.category === c)
+            );
+        }
+
+        function groupByBrand(arr) {
+            return arr.reduce((g, p) => { (g[p.brand] = g[p.brand] || []).push(p); return g; }, {});
+        }
+
+        function renderProducts() {
+            const grouped = groupByBrand(getFiltered());
+            if (!Object.keys(grouped).length) {
+                productsContainer.innerHTML = '<div class="empty-state"><p>No products found</p></div>';
+                return;
+            }
+
+            productsContainer.innerHTML = Object.entries(grouped).map(([brand, items]) => `
+                <div class="brand-section">
+                    <div class="brand-header" onclick="toggleBrand('${brand}')">
+                        <span class="brand-toggle ${collapsedBrands.has(brand) ? 'collapsed' : ''}">▼</span>
+                        <span class="brand-name">${brand}</span>
+                        <span class="brand-count">${items.length} products</span>
+                        <span class="brand-select-all" onclick="event.stopPropagation(); selectAllBrand('${brand}')">${items.every(p => selectedProducts.has(p.id)) ? 'Deselect All' : 'Select All'}</span>
+                    </div>
+                    <div class="product-grid ${collapsedBrands.has(brand) ? 'collapsed' : ''}">
+                        ${items.map(p => `
+                            <div class="product-card ${selectedProducts.has(p.id) ? 'selected' : ''}" onclick="toggle(${p.id})">
+                                <div class="check-indicator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                                <div class="product-image-wrapper">
+                                    ${p.image ? `<img src="${p.image}" class="product-image" onerror="this.parentElement.innerHTML='<span class=product-placeholder>📦</span>'">` : '<span class="product-placeholder">📦</span>'}
+                                </div>
+                                <div class="product-info">
+                                    <h3 class="product-name">${p.name}</h3>
+                                    <div class="product-meta">
+                                        <span class="product-commission">+${p.commission}</span>
+                                        <span class="product-category">${p.category}</span>
+                                    </div>
+                                    <a href="${p.link}" target="_blank" class="product-link" onclick="event.stopPropagation()">View on Amazon →</a>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggle(id) {
+            selectedProducts.has(id) ? selectedProducts.delete(id) : selectedProducts.add(id);
+            update();
+        }
+
+        function toggleBrand(brand) {
+            collapsedBrands.has(brand) ? collapsedBrands.delete(brand) : collapsedBrands.add(brand);
+            renderProducts();
+        }
+
+        function selectAllBrand(brand) {
+            const items = products.filter(p => p.brand === brand);
+            const all = items.every(p => selectedProducts.has(p.id));
+            items.forEach(p => all ? selectedProducts.delete(p.id) : selectedProducts.add(p.id));
+            update();
+        }
+
+        function update() {
+            selectionCount.textContent = `${selectedProducts.size} selected`;
+            submitBtn.disabled = !selectedProducts.size;
+            renderProducts();
+        }
+
+        function showModal() {
+            const sel = products.filter(p => selectedProducts.has(p.id));
+            modalContent.innerHTML = `
+                <h2>Confirm selection</h2>
+                <p class="modal-subtitle">${sel.length} products selected</p>
+                <div class="selected-products-list">
+                    ${sel.map(p => `
+                        <div class="selected-product-item">
+                            <img src="${p.image || ''}" onerror="this.style.background='#eee'">
+                            <div class="selected-product-details">
+                                <h4>${p.name}</h4>
+                                <p>${p.brand} · +${p.commission}</p>
+                            </div>
+                            <div class="remove-btn" onclick="remove(${p.id})">✕</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="form-group"><label>Your Name *</label><input type="text" id="name" placeholder="Enter your name"></div>
+                <div class="form-group"><label>Email *</label><input type="email" id="email" placeholder="Enter your email"></div>
+                <div class="form-group"><label>Notes (Optional)</label><textarea id="notes" placeholder="Any preferences..."></textarea></div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button class="btn-primary" onclick="submit()">Submit</button>
+                </div>
+            `;
+            submitModal.classList.add('active');
+        }
+
+        function remove(id) {
+            selectedProducts.delete(id);
+            selectedProducts.size ? showModal() : closeModal();
+            update();
+        }
+
+        function closeModal() { submitModal.classList.remove('active'); }
+
+        function submit() {
+            const name = $('name').value, email = $('email').value, notes = $('notes').value;
+            if (!name || !email) return alert('Please fill in name and email');
+            
+            const sel = products.filter(p => selectedProducts.has(p.id));
+            console.log('Submission:', { name, email, notes, products: sel });
+
+            modalContent.innerHTML = `
+                <div class="success-message">
+                    <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <h3>Submitted!</h3>
+                    <p>Thanks ${name}! We'll be in touch soon.</p>
+                    <br><button class="btn-primary" onclick="closeModal(); selectedProducts.clear(); update();">Done</button>
+                </div>
+            `;
+        }
+
+        function setupEvents() {
+            submitBtn.onclick = showModal;
+            searchInput.oninput = renderProducts;
+            brandFilter.onchange = renderProducts;
+            categoryFilter.onchange = renderProducts;
+            submitModal.onclick = e => e.target === submitModal && closeModal();
+            document.onkeydown = e => e.key === 'Escape' && closeModal();
+        }
+
+        init();
+    </script>
+</body>
+</html>
