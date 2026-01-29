@@ -27,10 +27,9 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: #F6F5EC;
             color: #1a1a1a;
-            /* iframe 优化：去除 body 滚动，让父页面控制 */
             overflow-x: hidden;
         }
-        .container { max-width: 1100px; margin: 0 auto; padding: 20px 20px 40px; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 100px 20px 40px; }
 
         .header { text-align: center; margin-bottom: 24px; }
         .badge { display: none; } /* 隐藏重复的标签 */
@@ -80,7 +79,17 @@
             border-radius: 8px; font-size: 13px; font-family: inherit;
         }
         .brand-url-input:focus { outline: none; border-color: #F4846E; background: white; }
-        .brand-url-list { max-height: 100px; overflow-y: auto; margin-top: 8px; }
+        .paste-btn {
+            background: white; color: #666; border: 1px solid #ddd; padding: 10px 12px;
+            border-radius: 8px; cursor: pointer; font-size: 12px; white-space: nowrap;
+        }
+        .paste-btn:hover { background: #f5f5f5; }
+        .add-btn {
+            background: #F4846E; color: white; border: none; padding: 10px 14px;
+            border-radius: 8px; cursor: pointer; font-size: 12px; white-space: nowrap;
+        }
+        .add-btn:hover { background: #e5745f; }
+        .brand-url-list { max-height: 100px; overflow-y: auto; margin-top: 8px; min-height: 0; }
         .brand-url-item {
             display: flex; align-items: center; gap: 8px; padding: 8px 12px;
             background: #FEF0ED; border-radius: 8px; margin-bottom: 6px; font-size: 13px;
@@ -463,27 +472,18 @@
                                 <div class="brand-url-label">Add product URLs:</div>
                                 <div style="display: flex; gap: 6px;">
                                     <input type="text" class="brand-url-input" id="input_${b.id}" style="flex: 1;"
-                                        placeholder="Paste or type Amazon URL..." 
-                                        onkeydown="if(event.key==='Enter') { event.preventDefault(); addBrandUrl('${b.id}', this.value, this); }">
-                                    <button onclick="pasteFromClipboard('${b.id}')" 
-                                        style="background: white; color: #666; border: 1px solid #ddd; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; white-space: nowrap;">
-                                        📋 Paste
-                                    </button>
-                                    <button onclick="addBrandUrl('${b.id}', document.getElementById('input_${b.id}').value, document.getElementById('input_${b.id}'))" 
-                                        style="background: #F4846E; color: white; border: none; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; white-space: nowrap;">
-                                        Add
-                                    </button>
+                                        placeholder="Paste or type Amazon URL...">
+                                    <button class="paste-btn" data-brand="${b.id}">📋 Paste</button>
+                                    <button class="add-btn" data-brand="${b.id}">Add</button>
                                 </div>
-                                ${urls.length > 0 ? `
-                                    <div class="brand-url-list" id="urlList_${b.id}">
-                                        ${urls.map((url, i) => `
-                                            <div class="brand-url-item">
-                                                <span>${url.length > 45 ? url.substring(0, 45) + '...' : url}</span>
-                                                <span class="brand-url-remove" onclick="removeBrandUrl('${b.id}', ${i})">✕</span>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                ` : ''}
+                                <div class="brand-url-list" id="urlList_${b.id}">
+                                    ${urls.map((url, i) => `
+                                        <div class="brand-url-item">
+                                            <span>${url.length > 45 ? url.substring(0, 45) + '...' : url}</span>
+                                            <span class="brand-url-remove" data-brand="${b.id}" data-index="${i}">✕</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
                             </div>
                         </div>
                     `}).join('')}
@@ -491,57 +491,64 @@
             `;
         }
 
-        function addBrandUrl(brandId, url, input) {
-            url = url.trim();
+        function addUrlFromInput(brandId) {
+            const input = document.getElementById('input_' + brandId);
+            if (!input) return;
+            const url = input.value.trim();
             if (!url) return;
+            
             if (!brandProductUrls[brandId]) brandProductUrls[brandId] = [];
             if (!brandProductUrls[brandId].includes(url)) {
                 brandProductUrls[brandId].push(url);
                 input.value = '';
-                renderFeaturedBrands();
+                updateUrlList(brandId);
                 update();
-                // 重新聚焦到输入框
-                setTimeout(() => {
-                    const newInput = document.getElementById('input_' + brandId);
-                    if (newInput) newInput.focus();
-                }, 100);
             }
         }
+        
+        // 只更新 URL 列表，不重新渲染整个卡片（保持输入框状态）
+        function updateUrlList(brandId) {
+            const listEl = document.getElementById('urlList_' + brandId);
+            if (!listEl) return;
+            const urls = brandProductUrls[brandId] || [];
+            listEl.innerHTML = urls.map((url, i) => `
+                <div class="brand-url-item">
+                    <span>${url.length > 45 ? url.substring(0, 45) + '...' : url}</span>
+                    <span class="brand-url-remove" data-brand="${brandId}" data-index="${i}">✕</span>
+                </div>
+            `).join('');
+        }
 
-        // 使用 Clipboard API 粘贴（点击按钮触发）
+        // 使用 Clipboard API 粘贴
         async function pasteFromClipboard(brandId) {
+            const input = document.getElementById('input_' + brandId);
             try {
                 const text = await navigator.clipboard.readText();
                 if (!text || !text.trim()) {
-                    alert('Clipboard is empty');
+                    if (input) input.focus();
                     return;
                 }
-                
                 processUrls(brandId, text.trim());
             } catch (err) {
-                // 如果 Clipboard API 不可用，提示用户手动粘贴
-                const input = document.getElementById('input_' + brandId);
+                // Clipboard API 可能需要 HTTPS 或用户授权
                 if (input) {
                     input.focus();
-                    alert('Please use Cmd+V to paste, or type the URL directly');
+                    // 尝试用 execCommand
+                    document.execCommand('paste');
                 }
             }
         }
         
         // 处理 URL 文本（支持多个）
         function processUrls(brandId, text) {
-            // 提取所有 URL
             const urlPattern = /https?:\/\/[^\s,\n<>"]+/g;
             let urls = text.match(urlPattern) || [];
             
-            if (urls.length === 0 && (text.includes('amazon.com') || text.includes('amzn.'))) {
+            if (urls.length === 0 && (text.includes('amazon') || text.includes('amzn'))) {
                 urls.push(text);
             }
             
-            if (urls.length === 0) {
-                alert('No valid URL found');
-                return;
-            }
+            if (urls.length === 0) return;
             
             if (!brandProductUrls[brandId]) brandProductUrls[brandId] = [];
             let added = 0;
@@ -554,22 +561,47 @@
             });
             
             if (added > 0) {
-                renderFeaturedBrands();
+                const input = document.getElementById('input_' + brandId);
+                if (input) input.value = '';
+                updateUrlList(brandId);
                 update();
-                setTimeout(() => {
-                    const newInput = document.getElementById('input_' + brandId);
-                    if (newInput) newInput.focus();
-                }, 100);
-            } else {
-                alert('URL already added');
             }
         }
+        
+        // 事件委托：处理所有按钮点击
+        document.addEventListener('click', function(e) {
+            // Paste 按钮
+            if (e.target.classList.contains('paste-btn')) {
+                const brandId = e.target.dataset.brand;
+                pasteFromClipboard(brandId);
+            }
+            // Add 按钮
+            if (e.target.classList.contains('add-btn')) {
+                const brandId = e.target.dataset.brand;
+                addUrlFromInput(brandId);
+            }
+            // 删除按钮
+            if (e.target.classList.contains('brand-url-remove')) {
+                const brandId = e.target.dataset.brand;
+                const index = parseInt(e.target.dataset.index);
+                removeBrandUrl(brandId, index);
+            }
+        });
+        
+        // Enter 键添加 URL
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.target.classList.contains('brand-url-input')) {
+                e.preventDefault();
+                const brandId = e.target.id.replace('input_', '');
+                addUrlFromInput(brandId);
+            }
+        });
 
         function removeBrandUrl(brandId, index) {
             if (brandProductUrls[brandId]) {
                 brandProductUrls[brandId].splice(index, 1);
                 if (brandProductUrls[brandId].length === 0) delete brandProductUrls[brandId];
-                renderFeaturedBrands();
+                updateUrlList(brandId);
                 update();
             }
         }
